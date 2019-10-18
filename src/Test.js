@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import styled, { keyframes } from "styled-components";
+import React from 'react';
+import PropTypes from 'prop-types';
+import styled, { keyframes } from 'styled-components';
 
 
 Loader.propTypes = {
@@ -13,12 +13,12 @@ Loader.propTypes = {
     className: PropTypes.string,
 };
 
-export default function Loader({ size = 50, weight = 2, color = "#0299de", centered, fast, style, className }) {
+export default function Loader({ size = 50, weight = 2, color = '#0299de', centered, fast, style, className }) {
     const defaultProps = {
         style,
         size,
         centered,
-        className: className ? className + " Loader" : "Loader",
+        className: className ? className + ' Loader' : 'Loader',
     };
 
     return (
@@ -63,7 +63,7 @@ const Wrapper = styled.div`
     position: relative;
     width: ${({ size }) => size}px;
     height: ${({ size }) => size}px;
-    margin: ${({ centered }) => centered && "0 auto"};
+    margin: ${({ centered }) => centered && '0 auto'};
     &:before {
         content: "";
         display: block;
@@ -73,7 +73,7 @@ const Wrapper = styled.div`
 
 const CircularSvg = styled.svg`
     animation: ${Rotate} 2s linear infinite;
-    animation-duration: ${({ fast }) => fast && "0.35s"};
+    animation-duration: ${({ fast }) => fast && '0.35s'};
     height: 100%;
     transform-origin: center center;
     width: 100%;
