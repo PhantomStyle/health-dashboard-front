@@ -1,99 +1,111 @@
 import React from 'react';
-import ServicesList from "./ServicesList";
-import axios from 'axios';
+import ServicesList from './ServicesList';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import styled from "styled-components";
-import Dropdown from "react-bootstrap/Dropdown";
+import styled from 'styled-components';
+import Dropdown from 'react-bootstrap/Dropdown';
+import axios from 'axios';
 
 
 export default class App extends React.Component {
+    state = {
+        services: [],
+        pollingTime: 1000,
+        interval: null,
+    }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            services: [],
-            pollingTime: 1000,
-            interval: null,
-        };
+    render() {
+        const { pollingTime, services } = this.state;
+
+        return (
+            <Wrapper>
+                <TitleWrapper>
+                    <h2>HEALTH-DASHBOARD</h2>
+                </TitleWrapper>
+                <DropdownWrapper>
+                    <Label>Polling period (seconds):</Label>
+                    <Dropdown>
+                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                            {pollingTime / 1000}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => {
+                                this.changePollingTime(1000);
+                            }}>1</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {
+                                this.changePollingTime(10000);
+                            }}>10</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {
+                                this.changePollingTime(30000);
+                            }}>30</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {
+                                this.changePollingTime(60000);
+                            }}>60</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </DropdownWrapper>
+                <ServicesWrapper>
+                    <ServicesList services={services} pollingTime={pollingTime}/>
+                </ServicesWrapper>
+            </Wrapper>
+        );
     }
 
     componentDidMount() {
+        const { pollingTime } = this.state;
+
         this.setState({
-            interval: setInterval(() => {
-                axios.get('http://localhost:11021/v1/hd/get-services')
-                    .then(res => {
-                        this.setState({services: res.data});
-                    })
-            }, this.state.pollingTime)
-        })
+            interval: setInterval(() => {this.fetchData();}, pollingTime)
+        });
     }
 
     componentWillUnmount() {
         clearInterval(this.interval);
     }
 
-    render() {
-        return (
-            <div>
-                <TitleWrapper>
-                    <Title/>
-                </TitleWrapper>
-                <Wrapper>
-                    <ServicesList services={this.state.services} pollingTime={this.state.pollingTime}/>
-                    <DropdownWrapper>
-                        <div>Polling period (seconds)</div>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                {this.state.pollingTime / 1000}
-                            </Dropdown.Toggle>
+    changePollingTime(newPollingTime) {
+        const { interval } = this.state;
 
-                            <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => {
-                                    this.changePollingTime(1000)
-                                }}>1</Dropdown.Item>
-                                <Dropdown.Item onClick={() => {
-                                    this.changePollingTime(10000)
-                                }}>10</Dropdown.Item>
-                                <Dropdown.Item onClick={() => {
-                                    this.changePollingTime(30000)
-                                }}>30</Dropdown.Item>
-                                <Dropdown.Item onClick={() => {
-                                    this.changePollingTime(60000)
-                                }}>60</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </DropdownWrapper>
-                </Wrapper>
-            </div>
-        )
+        clearInterval(interval);
+        this.setState({ pollingTime: newPollingTime });
+        this.setState({
+            interval: setInterval(() => {this.fetchData();}, newPollingTime)
+        });
     }
 
-    changePollingTime(newPollingTime) {
-        clearInterval(this.state.interval);
-        this.setState({pollingTime: newPollingTime});
-        this.setState({
-            interval: setInterval(() => {
-                axios.get('http://localhost:11021/v1/hd/get-services')
-                    .then(res => {
-                        this.setState({services: res.data});
-                    })
-            }, newPollingTime)
-        });
+    fetchData = () => {
+        axios.get('http://localhost:11021/v1/hd/get-services')
+            .then(res => {
+                this.setState({ services: res.data });
+            });
     }
 }
 
 const Wrapper = styled.div`
     display: flex;
+    flex-direction: column;
+    margin: 30px 0;
 `;
 
 const DropdownWrapper = styled.div`
-    position: relative;
-    left: 40px;
-    bottom: 23px;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    align-items: center;
+    margin-bottom: 40px;
 `;
 
 const TitleWrapper = styled.div`
-    margin-left: 30px;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    margin-bottom: 20px;
 `;
 
-const Title = () => <h1>HEALTH-DASHBOARD</h1>;
+const ServicesWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+`;
+
+const Label = styled.div`
+    margin-right: 15px;
+`;

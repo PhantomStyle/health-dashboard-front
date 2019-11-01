@@ -1,12 +1,13 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
+
 
 export default class StoppedCircle extends React.Component {
 
     render() {
         return (
             <CircularSvg viewBox="25 25 50 50"/>
-        )
+        );
     }
 }
 

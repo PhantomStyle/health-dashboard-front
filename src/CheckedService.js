@@ -1,29 +1,31 @@
-import React from "react";
-import RunningCircle from "./RunningCircle";
-import styled from "styled-components";
-import PropTypes from "prop-types";
-import {Alert} from 'react-bootstrap'
-import nextId from "react-id-generator";
+import React from 'react';
+import RunningCircle from './RunningCircle';
+import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import { Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import StoppedCircle from "./StoppedCircle";
+import StoppedCircle from './StoppedCircle';
+
 
 export default class CheckedService extends React.Component {
     render() {
+        const { serviceName, status, pollingTime, time } = this.props;
+
         return (
             <Wrapper>
                 <AlertWrapper>
-                    <Alert width={'500px'} key={nextId('service-name-')}
-                           variant={'dark'}>{this.props.serviceName}
+                    <Alert width={'500px'} variant={'dark'}>
+                        {serviceName}
                     </Alert>
                 </AlertWrapper>
-                {getCircle(this.props.status, this.props.pollingTime)}
+                {renderCircle(status, pollingTime)}
                 <AlertWrapper>
-                    <Alert key={nextId('last-time-updated-')}
-                           variant={'dark'}>{this.props.time}
+                    <Alert variant={'dark'}>
+                        {time}
                     </Alert>
                 </AlertWrapper>
             </Wrapper>
-        )
+        );
     }
 }
 
@@ -34,18 +36,17 @@ CheckedService.propTypes = {
     status: PropTypes.string
 };
 
-const getCircle = (status, pollingTime) => {
-    if (status === "UP") {
-        return <RunningCircle pollingTime={pollingTime}/>
+const renderCircle = (status, pollingTime) => {
+    if (status === 'UP') {
+        return <RunningCircle pollingTime={pollingTime}/>;
     }
-    return <StoppedCircle/>
+    return <StoppedCircle/>;
 };
 
 const Wrapper = styled.div`
     display: flex;
     flex-flow: row nowrap;
 `;
-
 
 const AlertWrapper = styled.div`
     width: 220px;
